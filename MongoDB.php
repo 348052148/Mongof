@@ -27,10 +27,10 @@ use MongoDB\Driver\WriteConcern;
      * @param string $config_name 配置名
      */
     public function __construct($collectionName = '', $config_name = NULL){
-        $mongo_config = \MongoDbConf::getConfig($config_name);
-        $authSource = @$mongo_config['uriOptions']['authSource'];//权限验证数据库名
+        $mongo_config = config($config_name);
+        $authSource = @$mongo_config['option']['authSource'];//权限验证数据库名
         $this->databaseName = empty($mongo_config['use_db']) ? $authSource : $mongo_config['use_db'];//需要连接处理的数据库
-        $mongo_config['uriOptions'] = isset($mongo_config['uriOptions']) ? $mongo_config['uriOptions'] : array();
+        $mongo_config['option'] = isset($mongo_config['option']) ? $mongo_config['option'] : array();
 
         $this->mongo_config = $mongo_config;
         if (empty($collectionName)) {
@@ -41,8 +41,8 @@ use MongoDB\Driver\WriteConcern;
         if (!isset(self::$Manager)) {
             self::$Manager = new Manager($this->mongo_config['dsn'],$this->mongo_config['option']);
         }
-        if(!empty($this->mongo_config['uriOptions']['ReadPreference'])){
-            self::$Manager = self::$Manager->selectServer(new ReadPreference($this->mongo_config['uriOptions']['ReadPreference']));
+        if(!empty($this->mongo_config['option']['ReadPreference'])){
+            self::$Manager = self::$Manager->selectServer(new ReadPreference($this->mongo_config['option']['ReadPreference']));
         }
         $this->readPreference = self::$Manager->getReadPreference();
     }
